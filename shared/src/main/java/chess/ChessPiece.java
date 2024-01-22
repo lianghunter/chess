@@ -199,6 +199,7 @@ public class ChessPiece {
         if(observedPiece != null && observedPiece.color != currentColor){
             validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), null));
         }
+
         //if at starting position
         if(startRow == row){
             //check if second row is clear
