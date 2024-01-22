@@ -78,6 +78,7 @@ public class ChessPiece {
                 moveList = diagonal(board, row, col, currentColor, currentType);
                 break;
             case KNIGHT:
+                moveList = knightMove(board, row, col, currentColor, currentType);
                 break;
             case ROOK:
                 moveList = straight(board, row, col, currentColor, currentType);
@@ -234,5 +235,72 @@ public class ChessPiece {
             }
         }
         return validMoves;
+    }
+
+    public static List<ChessMove> knightMove(ChessBoard chessBoard, int row, int col, ChessGame.TeamColor currentColor, PieceType currentType) {
+        ChessPosition startPos = new ChessPosition(row, col);
+        List<ChessMove> validMoves = new ArrayList<>();
+
+        int nextRow;
+        int nextCol;
+        //up 2 right 1
+        nextRow = row + 2;
+        nextCol = col + 1;
+        if(inbounds(nextRow, nextCol)){
+            addCheck(chessBoard, currentColor, startPos, validMoves, nextRow, nextCol);
+        }
+        //up 2 left 1
+        nextRow = row + 2;
+        nextCol = col - 1;
+        if(inbounds(nextRow, nextCol)){
+            addCheck(chessBoard, currentColor, startPos, validMoves, nextRow, nextCol);
+        }
+        //up 1 right 2
+        nextRow = row + 1;
+        nextCol = col + 2;
+        if(inbounds(nextRow, nextCol)){
+            addCheck(chessBoard, currentColor, startPos, validMoves, nextRow, nextCol);
+        }
+        //up 1 left 2
+        nextRow = row + 1;
+        nextCol = col - 2;
+        if(inbounds(nextRow, nextCol)){
+            addCheck(chessBoard, currentColor, startPos, validMoves, nextRow, nextCol);
+        }
+        //down 1 right 2
+        nextRow = row - 1;
+        nextCol = col + 2;
+        if(inbounds(nextRow, nextCol)){
+            addCheck(chessBoard, currentColor, startPos, validMoves, nextRow, nextCol);
+        }
+        //down 1 left 2
+        nextRow = row - 1;
+        nextCol = col - 2;
+        if(inbounds(nextRow, nextCol)){
+            addCheck(chessBoard, currentColor, startPos, validMoves, nextRow, nextCol);
+        }
+        //down 2 right 1
+        nextRow = row - 2;
+        nextCol = col + 1;
+        if(inbounds(nextRow, nextCol)){
+            addCheck(chessBoard, currentColor, startPos, validMoves, nextRow, nextCol);
+        }
+        //down 2 left 1
+        nextRow = row - 2;
+        nextCol = col - 1;
+        if(inbounds(nextRow, nextCol)){
+            addCheck(chessBoard, currentColor, startPos, validMoves, nextRow, nextCol);
+        }
+
+        return validMoves;
+    }
+
+    private static boolean inbounds(int row, int col){
+        if(row <= 8 && row >= 1 && col <=8 && col >= 1){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
