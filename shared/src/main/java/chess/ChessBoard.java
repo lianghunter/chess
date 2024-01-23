@@ -38,6 +38,9 @@ public class ChessBoard {
      */
     //What if position is empty???
     public ChessPiece getPiece(ChessPosition position) {
+        if (squares[position.getRow() - 1][position.getColumn() - 1] == null){
+            return  null;
+        }
         return this.squares[position.getRow() - 1][position.getColumn() - 1];
     }
 

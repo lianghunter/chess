@@ -62,7 +62,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece currentPiece = board.getPiece(myPosition);
         PieceType currentType = currentPiece.pieceType;
-        ChessGame.TeamColor currentColor = color;
+        ChessGame.TeamColor currentColor = currentPiece.color;
         List<ChessMove> moveList = new ArrayList<>();
         int col = myPosition.getColumn();
         int row = myPosition.getRow();
@@ -304,6 +304,8 @@ public class ChessPiece {
             return false;
         }
     }
+
+
 
     @Override
     public boolean equals(Object o) {
