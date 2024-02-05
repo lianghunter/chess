@@ -200,31 +200,36 @@ public class ChessPiece {
         //check diagonals
         //next and right
         int nextCol = col + 1;
-        ChessPiece observedPiece = chessBoard.getPiece(new ChessPosition(nextRow, nextCol));
-        //if there is a piece of the opposite color
-        if(observedPiece != null && observedPiece.color != currentColor){
-            if(nextRow == 1 || nextRow == 8){
-                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.ROOK));
-                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.KNIGHT));
-                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.BISHOP));
-                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.QUEEN));
-            }
-            else {
-                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), null));
+        ChessPiece observedPiece = null;
+        if(inbounds(nextRow, nextCol)){
+            observedPiece = chessBoard.getPiece(new ChessPosition(nextRow, nextCol));
+            //if there is a piece of the opposite color
+            if(observedPiece != null && observedPiece.color != currentColor){
+                if(nextRow == 1 || nextRow == 8){
+                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.ROOK));
+                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.KNIGHT));
+                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.BISHOP));
+                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.QUEEN));
+                }
+                else {
+                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), null));
+                }
             }
         }
         //next and left
         nextCol -= 2;
-        observedPiece = chessBoard.getPiece(new ChessPosition(nextRow, nextCol));
-        if(observedPiece != null && observedPiece.color != currentColor){
-            if(nextRow == 1 || nextRow == 8){
-                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.ROOK));
-                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.KNIGHT));
-                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.BISHOP));
-                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.QUEEN));
-            }
-            else {
-                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), null));
+        if(inbounds(nextRow, nextCol)){
+            observedPiece = chessBoard.getPiece(new ChessPosition(nextRow, nextCol));
+            if(observedPiece != null && observedPiece.color != currentColor){
+                if(nextRow == 1 || nextRow == 8){
+                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.ROOK));
+                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.KNIGHT));
+                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.BISHOP));
+                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.QUEEN));
+                }
+                else {
+                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), null));
+                }
             }
         }
         //if at starting position
