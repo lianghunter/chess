@@ -204,21 +204,18 @@ public class ChessGame {
     public boolean noValidMoves(TeamColor teamColor){
         ChessPiece currentPiece;
         ArrayList<ChessPosition> selfPositions = new ArrayList<>();
+        Collection<ChessMove> selfMoves = new ArrayList<>();
         for(int i = 1; i <= 8; i++){
             for(int j = 1; j <= 8; j++){
                 currentPiece = this.board.getPiece(new ChessPosition(i, j));
                 if(currentPiece != null){
                     if(currentPiece.getTeamColor() == teamColor){
-                        selfPositions.add(new ChessPosition(i, j));
+                        selfMoves.addAll(validMoves(new ChessPosition(i, j)));
                     }
                 }
             }
         }
 
-        Collection<ChessMove> selfMoves = new ArrayList<>();
-        for(ChessPosition position : selfPositions){
-            selfMoves.addAll(validMoves(position));
-        }
         if(selfMoves.isEmpty()){
             return true;
         }
