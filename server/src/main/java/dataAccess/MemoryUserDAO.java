@@ -35,6 +35,9 @@ public class MemoryUserDAO implements UserDAO{
 
     @Override
     public void validateUserPassword(String username, String password) throws DataAccessException{
+        if(userSet.isEmpty()){
+            throw new DataAccessException("Error: unauthorized");
+        }
         for(UserData user: userSet){
             if(user.username().equals(username) && !user.password().equals(password)){
                 throw new DataAccessException("Error: unauthorized");
