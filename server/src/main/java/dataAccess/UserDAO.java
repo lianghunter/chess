@@ -9,6 +9,5 @@ import javax.xml.crypto.Data;
 public interface UserDAO {
     public void clear() throws DataAccessException;
     public void createUser(RegisterRequest u) throws DataAccessException;
-    public UserData getUser(String username) throws DataAccessException;
     public void validateUserPassword(String username, String password) throws DataAccessException;
 }

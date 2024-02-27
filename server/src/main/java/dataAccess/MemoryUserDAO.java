@@ -34,12 +34,6 @@ public class MemoryUserDAO implements UserDAO{
     }
 
     @Override
-    public UserData getUser(String username) throws DataAccessException {
-        //return userSet.
-        return null;
-    }
-
-    @Override
     public void validateUserPassword(String username, String password) throws DataAccessException{
         for(UserData user: userSet){
             if(user.username().equals(username) && !user.password().equals(password)){

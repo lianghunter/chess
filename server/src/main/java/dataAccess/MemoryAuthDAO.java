@@ -20,11 +20,6 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     @Override
-    public AuthData getAuth() throws DataAccessException {
-        return null;
-    }
-
-    @Override
     public void deleteAuth(String authToken) throws DataAccessException {
         if(authToken.isEmpty()){
             throw new DataAccessException("Error: unauthorized");

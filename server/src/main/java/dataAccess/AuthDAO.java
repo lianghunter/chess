@@ -7,7 +7,6 @@ public interface AuthDAO {
     public void createAuth(String token, String username) throws DataAccessException;
     //Retrieve an authorization given an authToken.
     //what to return? what to input? where is authToken created?
-    public AuthData getAuth() throws DataAccessException;
     public void deleteAuth(String authToken) throws DataAccessException;
     public void authExists(String authToken) throws DataAccessException;
     public String getUserFromAuth(String authToken);

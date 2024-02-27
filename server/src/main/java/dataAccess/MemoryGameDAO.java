@@ -18,7 +18,7 @@ public class MemoryGameDAO implements GameDAO{
 
     @Override
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
-        if(gameExists(0, request.gameName())){
+        if(gameExists(0, request.gameName()) || request.gameName().isEmpty()){
             throw new DataAccessException("Error: bad request");
         }
         Random random = new Random();
@@ -32,19 +32,9 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public GameData getGame() throws DataAccessException {
-        return null;
-    }
-
-    @Override
     public ListGamesResult listGame() throws DataAccessException {
         List<GameData> list = new ArrayList<>(gameSet);
         return new ListGamesResult(list);
-    }
-
-    @Override
-    public void updateGame() throws DataAccessException {
-
     }
 
 
@@ -75,10 +65,7 @@ public class MemoryGameDAO implements GameDAO{
                     gameSet.remove(game);
                     break;
                 }
-                //add this for observer if necessary
-                /*else {
-
-                }*/
+                //might add an else for an observer
             }
         }
     }
