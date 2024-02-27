@@ -14,9 +14,6 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class UserService {
-//    public AuthData register(UserData user) {}
-//    public AuthData login(UserData user) {}
-//    public void logout(UserData user) {}
     private final AuthDAO authDAO = new MemoryAuthDAO();
     private final GameDAO gameDAO = new MemoryGameDAO();
     private final UserDAO userDAO = new MemoryUserDAO();

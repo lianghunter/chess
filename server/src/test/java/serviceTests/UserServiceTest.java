@@ -15,7 +15,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserServiceTest {
     private final UserService service = new UserService();
     @BeforeEach
-    void clear() throws DataAccessException {
+    void everyClear() throws DataAccessException {
+        service.clear();
+    }
+
+    @Test
+    void clear() throws DataAccessException{
         service.clear();
     }
 

@@ -201,6 +201,23 @@ public class ChessPiece {
         //next and right
         int nextCol = col + 1;
         ChessPiece observedPiece = null;
+        pawnDiagonal(chessBoard, currentColor, nextRow, nextCol, validMoves, startPos);
+        //next and left
+        nextCol -= 2;
+        pawnDiagonal(chessBoard, currentColor, nextRow, nextCol, validMoves, startPos);
+        //if at starting position
+        if(startRow == row && firstEmpty){
+            //check if second row is clear
+            nextRow += upDown;
+            if(nextRow >= 1 && nextRow <= 8 && chessBoard.getPiece(new ChessPosition(nextRow, col)) == null){
+                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, col), null));
+            }
+        }
+        return validMoves;
+    }
+
+    private static void pawnDiagonal(ChessBoard chessBoard, ChessGame.TeamColor currentColor, int nextRow, int nextCol, List<ChessMove> validMoves, ChessPosition startPos) {
+        ChessPiece observedPiece;
         if(inbounds(nextRow, nextCol)){
             observedPiece = chessBoard.getPiece(new ChessPosition(nextRow, nextCol));
             //if there is a piece of the opposite color
@@ -216,31 +233,6 @@ public class ChessPiece {
                 }
             }
         }
-        //next and left
-        nextCol -= 2;
-        if(inbounds(nextRow, nextCol)){
-            observedPiece = chessBoard.getPiece(new ChessPosition(nextRow, nextCol));
-            if(observedPiece != null && observedPiece.color != currentColor){
-                if(nextRow == 1 || nextRow == 8){
-                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.ROOK));
-                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.KNIGHT));
-                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.BISHOP));
-                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), PieceType.QUEEN));
-                }
-                else {
-                    validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, nextCol), null));
-                }
-            }
-        }
-        //if at starting position
-        if(startRow == row && firstEmpty){
-            //check if second row is clear
-            nextRow += upDown;
-            if(nextRow >= 1 && nextRow <= 8 && chessBoard.getPiece(new ChessPosition(nextRow, col)) == null){
-                validMoves.add(new ChessMove(startPos, new ChessPosition(nextRow, col), null));
-            }
-        }
-        return validMoves;
     }
 
     public static List<ChessMove> knightMove(ChessBoard chessBoard, int row, int col, ChessGame.TeamColor currentColor, PieceType currentType) {
