@@ -2,21 +2,25 @@ package dataAccess;
 
 import model.AuthData;
 import model.GameData;
+import request.CreateGameRequest;
+import result.CreateGameResult;
+import result.ListGamesResult;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 public class MemoryGameDAO implements GameDAO{
-    private static HashMap<Integer, GameData> gameSet = new HashMap<Integer, GameData>();
+    private static HashSet<GameData> gameSet = new HashSet<GameData>();
     @Override
     public void clear() throws DataAccessException {
         gameSet.clear();
     }
 
     @Override
-    public void createGame() throws DataAccessException {
-
+    public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
+        return null;
     }
 
     @Override
@@ -25,8 +29,9 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public List<GameData> listGame() throws DataAccessException {
-        return null;
+    public ListGamesResult listGame() throws DataAccessException {
+        List<GameData> list = new ArrayList<>(gameSet);
+        return new ListGamesResult(list);
     }
 
     @Override

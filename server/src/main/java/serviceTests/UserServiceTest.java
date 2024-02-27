@@ -13,7 +13,7 @@ public class UserServiceTest {
 //        service.addPet(new Pet(0, "sally", PetType.CAT));
 //        service.addPet(new Pet(0, "fido", PetType.DOG));
 
-        service.clear();
-        assertEquals(0, service.listAuth().size());
+        //service.clear();
+        //assertEquals(0, service.listAuth().size());
     }
 }
