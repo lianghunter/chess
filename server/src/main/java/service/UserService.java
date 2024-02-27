@@ -3,10 +3,7 @@ package service;
 import dataAccess.*;
 import model.AuthData;
 import model.UserData;
-import request.CreateGameRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
+import request.*;
 import result.CreateGameResult;
 import result.ListGamesResult;
 import result.LoginResult;
@@ -49,10 +46,10 @@ public class UserService {
             userDAO.createUser(request);
             authToken = UUID.randomUUID().toString();
             authDAO.createAuth(authToken, request.username());
+            return new RegisterResult(request.username(), authToken);
         } catch (DataAccessException e) {
             throw e;
         }
-        return new RegisterResult(request.username(), authToken);
     }
 
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
@@ -91,9 +88,32 @@ public class UserService {
         }
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException{
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws DataAccessException{
+        try{
+            authDAO.authExists(authToken);
+        }
+        catch (DataAccessException e){
+            throw e;
+        }
         try{
             return gameDAO.createGame(request);
+        }
+        catch (DataAccessException e){
+            throw e;
+        }
+    }
+
+    public void joinGame(JoinGameRequest joinGameRequest, String authToken) throws DataAccessException{
+        String username;
+        try{
+            authDAO.authExists(authToken);
+            username = authDAO.getUserFromAuth(authToken);
+        }
+        catch (DataAccessException e){
+            throw e;
+        }
+        try{
+            gameDAO.joinGame(joinGameRequest, username);
         }
         catch (DataAccessException e){
             throw e;

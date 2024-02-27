@@ -2,14 +2,8 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
-import request.ListGamesRequest;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
-import result.FailureResult;
-import result.ListGamesResult;
-import result.LoginResult;
-import result.RegisterResult;
+import request.*;
+import result.*;
 import service.UserService;
 import spark.*;
 
@@ -25,6 +19,7 @@ public class Server {
         Spark.delete("/session", this::logout);
         Spark.get("/game", this::listGames);
         Spark.post("/game", this::createGame);
+        Spark.put("/game", this::joinGame);
         Spark.init();
         Spark.awaitInitialization();
         return Spark.port();
@@ -92,7 +87,25 @@ public class Server {
 
     public Object createGame(Request request, Response response){
         try {
+            String authToken = request.headers("authorization");
+            //LoginRequest loginRequest = new Gson().fromJson(request.body(), LoginRequest.class);
+            CreateGameRequest createGameRequest = new Gson().fromJson(request.body(), CreateGameRequest.class);
+            CreateGameResult result = service.createGame(createGameRequest, authToken);
+            response.status(200);
+            return new Gson().toJson(result);
+        }
+        catch (DataAccessException e){
+            return errorResult(e, response);
+        }
+    }
 
+    public Object joinGame(Request request, Response response){
+        try {
+            String authToken = request.headers("authorization");
+            JoinGameRequest joinGameRequest = new Gson().fromJson(request.body(), JoinGameRequest.class);
+            service.joinGame(joinGameRequest, authToken);
+            response.status(200);
+            return "{}";
         }
         catch (DataAccessException e){
             return errorResult(e, response);
@@ -103,12 +116,16 @@ public class Server {
         switch (e.getMessage()){
             case "Error: bad request":
                 response.status(400);
+                break;
             case "Error: unauthorized":
                 response.status(401);
+                break;
             case "Error: already taken":
                 response.status(403);
+                break;
             default:
                 response.status(500);
+                break;
         }
         FailureResult result = new FailureResult(e.getMessage());
         return new Gson().toJson(result);
