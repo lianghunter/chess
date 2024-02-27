@@ -21,7 +21,7 @@ public class MemoryAuthDAO implements AuthDAO{
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-        if(authToken.isEmpty()){
+        if(authToken == null){
             throw new DataAccessException("Error: unauthorized");
         }
         boolean authFound = false;
@@ -40,7 +40,7 @@ public class MemoryAuthDAO implements AuthDAO{
     @Override
     public void authExists(String authToken) throws DataAccessException {
         boolean authFound = false;
-        if(authToken.isEmpty()){
+        if(authToken == null || authToken.isEmpty()){
             throw new DataAccessException("Error: unauthorized");
         }
         for(AuthData auth : authSet){

@@ -19,8 +19,8 @@ public class MemoryUserDAO implements UserDAO{
     public void createUser(RegisterRequest request) throws DataAccessException {
         String username = request.username();
         String password = request.password();
-        if(username.trim().isEmpty() || username == null ||
-           password.trim().isEmpty() || password == null){
+        if(username == null || username.trim().isEmpty() ||
+                password == null || password.trim().isEmpty()){
             throw new DataAccessException("Error: bad request");
         }
         for(UserData user : userSet){
@@ -38,10 +38,17 @@ public class MemoryUserDAO implements UserDAO{
         if(userSet.isEmpty()){
             throw new DataAccessException("Error: unauthorized");
         }
+        boolean userFound = false;
         for(UserData user: userSet){
+            if(user.username().equals(username)){
+                userFound = true;
+            }
             if(user.username().equals(username) && !user.password().equals(password)){
                 throw new DataAccessException("Error: unauthorized");
             }
+        }
+        if(!userFound){
+            throw new DataAccessException("Error: unauthorized");
         }
     }
 }

@@ -55,10 +55,10 @@ public class UserService {
             userDAO.validateUserPassword(loginRequest.username(), loginRequest.password());
             authToken = UUID.randomUUID().toString();
             authDAO.createAuth(authToken, loginRequest.username());
+            return new LoginResult(loginRequest.username(), authToken);
         } catch (DataAccessException e) {
             throw e;
         }
-        return new LoginResult(loginRequest.username(), authToken);
     }
 
     public void logout(String authToken) throws DataAccessException {
