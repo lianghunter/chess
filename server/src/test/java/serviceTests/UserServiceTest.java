@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTest {
     private final UserService service = new UserService();
-    @Test
+    @BeforeEach
     void clear() throws DataAccessException {
         service.clear();
     }
@@ -141,5 +141,4 @@ public class UserServiceTest {
         JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", createGameResult.gameID());
         assertThrows(DataAccessException.class, () -> service.joinGame(joinGameRequest, "bad token"));
     }
-
 }
