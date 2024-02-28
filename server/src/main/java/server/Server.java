@@ -60,7 +60,7 @@ public class Server {
         }
     }
 
-    //depends on authtoken, remove the authtoken needed, authtoken linked to user
+    //depends on authToken, remove the authToken needed, authToken linked to user
     private Object logout(Request request, Response response){
         try {
             String authToken = request.headers("authorization");

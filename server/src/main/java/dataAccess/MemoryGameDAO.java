@@ -45,27 +45,30 @@ public class MemoryGameDAO implements GameDAO{
             throw new DataAccessException("Error: bad request");
         }
         GameData currentGame = null;
-        for(GameData game : gameSet){
-            //ensure right game
-            if(game.gameID() == joinGameRequest.gameID()){
-                //ensure color not taken
-                if((!game.blackUsername().isEmpty() && joinGameRequest.playerColor().equals("BLACK")) ||
-                        (!game.whiteUsername().isEmpty() && joinGameRequest.playerColor().equals("WHITE"))){
-                    throw new DataAccessException("Error: already taken");
+        //if color null, skip. might be done better after checking the game.
+        if(!(joinGameRequest.playerColor() == null)){
+            for(GameData game : gameSet){
+                //ensure right game
+                if(game.gameID() == joinGameRequest.gameID()){
+                    //ensure color not taken
+                    if((!game.blackUsername().isEmpty() && joinGameRequest.playerColor().equals("BLACK")) ||
+                            (!game.whiteUsername().isEmpty() && joinGameRequest.playerColor().equals("WHITE"))){
+                        throw new DataAccessException("Error: already taken");
+                    }
+                    if(joinGameRequest.playerColor().equals("BLACK")){
+                        currentGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
+                        gameSet.add(currentGame);
+                        gameSet.remove(game);
+                        break;
+                    }
+                    else if (joinGameRequest.playerColor().equals("WHITE")) {
+                        currentGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
+                        gameSet.add(currentGame);
+                        gameSet.remove(game);
+                        break;
+                    }
+                    //might add an else for an observer
                 }
-                if(joinGameRequest.playerColor().equals("BLACK")){
-                    currentGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
-                    gameSet.add(currentGame);
-                    gameSet.remove(game);
-                    break;
-                }
-                else if (joinGameRequest.playerColor().equals("WHITE")) {
-                    currentGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
-                    gameSet.add(currentGame);
-                    gameSet.remove(game);
-                    break;
-                }
-                //might add an else for an observer
             }
         }
     }

@@ -165,11 +165,11 @@ public class StandardAPITests {
         Assertions.assertNotNull(loginTwo.authToken, "Login result did not contain an authToken");
 
         Assertions.assertNotEquals(existingAuth, loginOne.authToken,
-                "Authtoken returned by login matched authtoken from prior register");
+                "Authtoken returned by login matched authToken from prior register");
         Assertions.assertNotEquals(existingAuth, loginTwo.authToken,
-                "Authtoken returned by login matched authtoken from prior register");
+                "Authtoken returned by login matched authToken from prior register");
         Assertions.assertNotEquals(loginOne.authToken, loginTwo.authToken,
-                "Authtoken returned by login matched authtoken from prior login");
+                "Authtoken returned by login matched authToken from prior login");
 
 
         TestModels.TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
