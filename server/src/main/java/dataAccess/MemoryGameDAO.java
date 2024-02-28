@@ -18,7 +18,7 @@ public class MemoryGameDAO implements GameDAO{
 
     @Override
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
-        if(gameExists(0, request.gameName()) || request.gameName().isEmpty()){
+        if(gameExists(0, request.gameName()) || request.gameName() == null){
             throw new DataAccessException("Error: bad request");
         }
         Random random = new Random();
@@ -26,8 +26,8 @@ public class MemoryGameDAO implements GameDAO{
         while(gameExists(randomPositiveInt, "")){
             randomPositiveInt = random.nextInt(Integer.MAX_VALUE - 1) + 1;
         }
-        gameSet.add(new GameData(randomPositiveInt, "",
-                "", request.gameName(), new ChessGame()));
+        gameSet.add(new GameData(randomPositiveInt, null,
+                null, request.gameName(), new ChessGame()));
         return new CreateGameResult(randomPositiveInt);
     }
 
@@ -51,8 +51,8 @@ public class MemoryGameDAO implements GameDAO{
                 //ensure right game
                 if(game.gameID() == joinGameRequest.gameID()){
                     //ensure color not taken
-                    if((!game.blackUsername().isEmpty() && joinGameRequest.playerColor().equals("BLACK")) ||
-                            (!game.whiteUsername().isEmpty() && joinGameRequest.playerColor().equals("WHITE"))){
+                    if( (!(game.blackUsername() == null) && joinGameRequest.playerColor().equals("BLACK")) ||
+                            (!(game.whiteUsername() == null) && joinGameRequest.playerColor().equals("WHITE")) ){
                         throw new DataAccessException("Error: already taken");
                     }
                     if(joinGameRequest.playerColor().equals("BLACK")){
