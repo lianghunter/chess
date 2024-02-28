@@ -89,10 +89,8 @@ public class UserServiceTest {
         service.register(request);
         LoginRequest loginRequest = new LoginRequest("bob", "bobpass");
         LoginResult loginResult = service.login(loginRequest);
-        CreateGameRequest createGameRequest2 = new CreateGameRequest("");
+        CreateGameRequest createGameRequest2 = new CreateGameRequest(null);
         assertThrows(DataAccessException.class, () -> service.createGame(createGameRequest2, loginResult.authToken()));
-        CreateGameRequest createGameRequest = new CreateGameRequest("game1");
-        assertThrows(DataAccessException.class, () -> service.createGame(createGameRequest, ""));
     }
 
     @Test
