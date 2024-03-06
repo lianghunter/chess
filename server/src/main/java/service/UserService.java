@@ -10,13 +10,37 @@ import result.LoginResult;
 import result.RegisterResult;
 import server.Server;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.UUID;
 
 public class UserService {
-    private final AuthDAO authDAO = new MemoryAuthDAO();
-    private final GameDAO gameDAO = new MemoryGameDAO();
-    private final UserDAO userDAO = new MemoryUserDAO();
+    //change to sql daos
+    private final AuthDAO authDAO;
+    {
+        try {
+            authDAO = new SQLAuthDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private final GameDAO gameDAO ;
+    {
+        try {
+            gameDAO = new SQLGameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private final UserDAO userDAO;
+    {
+        try {
+            userDAO = new SQLUserDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void clear() throws DataAccessException {
         //try catch
         try {

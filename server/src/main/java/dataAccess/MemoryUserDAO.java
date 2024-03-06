@@ -51,4 +51,9 @@ public class MemoryUserDAO implements UserDAO{
             throw new DataAccessException("Error: unauthorized");
         }
     }
+
+    @Override
+    public void configureDatabase() throws DataAccessException {
+
+    }
 }

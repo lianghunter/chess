@@ -73,6 +73,11 @@ public class MemoryGameDAO implements GameDAO{
         }
     }
 
+    @Override
+    public void configureDatabase() throws DataAccessException {
+
+    }
+
 
     @Override
     public boolean gameExists(int gameID, String gameName) throws DataAccessException {

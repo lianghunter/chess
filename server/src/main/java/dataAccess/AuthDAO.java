@@ -10,4 +10,5 @@ public interface AuthDAO {
     public void deleteAuth(String authToken) throws DataAccessException;
     public void authExists(String authToken) throws DataAccessException;
     public String getUserFromAuth(String authToken);
+    public void configureDatabase() throws DataAccessException;
 }

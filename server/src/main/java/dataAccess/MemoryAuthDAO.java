@@ -63,4 +63,9 @@ public class MemoryAuthDAO implements AuthDAO{
         }
         return "";
     }
+
+    @Override
+    public void configureDatabase() throws DataAccessException {
+
+    }
 }
