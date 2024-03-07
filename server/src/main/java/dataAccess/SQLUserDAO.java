@@ -32,6 +32,12 @@ public class SQLUserDAO implements UserDAO{
 
     @Override
     public void createUser(RegisterRequest register) throws DataAccessException {
+        String username = register.username();
+        String password = register.password();
+        if(username == null || username.trim().isEmpty() ||
+                password == null || password.trim().isEmpty()){
+            throw new DataAccessException("Error: bad request");
+        }
         try (var conn = DatabaseManager.getConnection()){
             //add
             try (var preparedStatement = conn.prepareStatement("INSERT INTO users (username, email, password) " +
