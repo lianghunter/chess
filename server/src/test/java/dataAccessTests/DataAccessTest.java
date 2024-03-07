@@ -58,6 +58,14 @@ public class DataAccessTest {
     }
 
     @Test
+    void loginFailUser() throws DataAccessException {
+        RegisterRequest request = new RegisterRequest("bob", "bobpass", "bob@mail");
+        service.register(request);
+        LoginRequest loginRequest = new LoginRequest("beb", "bobpass");
+        assertThrows(DataAccessException.class, () -> service.login(loginRequest));
+    }
+
+    @Test
     void logoutSuccess() throws DataAccessException {
         RegisterRequest request = new RegisterRequest("bob", "bobpass", "bob@mail");
         service.register(request);
@@ -74,6 +82,17 @@ public class DataAccessTest {
         LoginResult loginResult = service.login(loginRequest);
         assertThrows(DataAccessException.class, () -> service.logout("0"));
     }
+
+    @Test
+    void logoutTwiceFail() throws DataAccessException {
+        RegisterRequest request = new RegisterRequest("bob", "bobpass", "bob@mail");
+        service.register(request);
+        LoginRequest loginRequest = new LoginRequest("bob", "bobpass");
+        LoginResult loginResult = service.login(loginRequest);
+        service.logout(loginResult.authToken());
+        assertThrows(DataAccessException.class, () -> service.logout("0"));
+    }
+
 
     @Test
     void createGameSuccess() throws DataAccessException {
@@ -147,4 +166,70 @@ public class DataAccessTest {
         JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", createGameResult.gameID());
         assertThrows(DataAccessException.class, () -> service.joinGame(joinGameRequest, "bad token"));
     }
+
+    @Test
+    void twoPlayerJoin() throws DataAccessException {
+        RegisterRequest request = new RegisterRequest("bob", "bobpass", "bob@mail");
+        service.register(request);
+        LoginRequest loginRequest = new LoginRequest("bob", "bobpass");
+        LoginResult loginResult = service.login(loginRequest);
+        CreateGameRequest createGameRequest = new CreateGameRequest("game1");
+        CreateGameResult createGameResult = service.createGame(createGameRequest, loginResult.authToken());
+        JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", createGameResult.gameID());
+        service.joinGame(joinGameRequest, loginResult.authToken());
+        joinGameRequest = new JoinGameRequest("BLACK", createGameResult.gameID());
+        service.joinGame(joinGameRequest, loginResult.authToken());
+        ListGamesResult listGamesResult = service.listGames(loginResult.authToken());
+        assertEquals(listGamesResult.games().get(0).whiteUsername(), "bob");
+        assertEquals(listGamesResult.games().get(0).blackUsername(), "bob");
+    }
+
+    @Test
+    void joinAndLogout() throws DataAccessException {
+        RegisterRequest request = new RegisterRequest("bob", "bobpass", "bob@mail");
+        service.register(request);
+        LoginRequest loginRequest = new LoginRequest("bob", "bobpass");
+        LoginResult loginResult = service.login(loginRequest);
+        CreateGameRequest createGameRequest = new CreateGameRequest("game1");
+        CreateGameResult createGameResult = service.createGame(createGameRequest, loginResult.authToken());
+        JoinGameRequest joinGameRequest = new JoinGameRequest("WHITE", createGameResult.gameID());
+        service.joinGame(joinGameRequest, loginResult.authToken());
+
+        request = new RegisterRequest("beb", "bebpass", "bob@mail");
+        service.register(request);
+        loginRequest = new LoginRequest("beb", "bebpass");
+        loginResult = service.login(loginRequest);
+        joinGameRequest = new JoinGameRequest("BLACK", createGameResult.gameID());
+        service.joinGame(joinGameRequest, loginResult.authToken());
+        ListGamesResult listGamesResult = service.listGames(loginResult.authToken());
+        service.logout(loginResult.authToken());
+
+        assertEquals(listGamesResult.games().get(0).whiteUsername(), "bob");
+        assertEquals(listGamesResult.games().get(0).blackUsername(), "beb");
+    }
+
+    @Test
+    void inOutIn() throws DataAccessException {
+        RegisterRequest request = new RegisterRequest("bob", "bobpass", "bob@mail");
+        service.register(request);
+        LoginRequest loginRequest = new LoginRequest("bob", "bobpass");
+        LoginResult loginResult = service.login(loginRequest);
+        service.logout(loginResult.authToken());
+        service.login(loginRequest);
+    }
+
+    @Test
+    void createManyGames() throws DataAccessException {
+        RegisterRequest request = new RegisterRequest("bob", "bobpass", "bob@mail");
+        service.register(request);
+        LoginRequest loginRequest = new LoginRequest("bob", "bobpass");
+        LoginResult loginResult = service.login(loginRequest);
+        CreateGameRequest createGameRequest = new CreateGameRequest("game1");
+        CreateGameResult createGameResult = service.createGame(createGameRequest, loginResult.authToken());
+        createGameRequest = new CreateGameRequest("game2");
+        service.createGame(createGameRequest, loginResult.authToken());
+        assertNotEquals(createGameResult.gameID(), 0);
+    }
+
+
 }

@@ -83,11 +83,6 @@ public class SQLGameDAO implements GameDAO{
     }
 
     @Override
-    public boolean gameExists(int gameID, String gameName) throws DataAccessException {
-        return false;
-    }
-
-    @Override
     public void joinGame(JoinGameRequest joinGameRequest, String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
             try (var preparedStatement = conn.prepareStatement("SELECT gameName FROM games WHERE gameID=?")) {

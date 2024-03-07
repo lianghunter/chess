@@ -89,6 +89,7 @@ public class UserService {
         try {
             authDAO.authExists(authToken);
             authDAO.deleteAuth(authToken);
+            //does logout need to update a game and remove a user?
         }
         catch (DataAccessException e){
             throw e;

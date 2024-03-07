@@ -18,7 +18,7 @@ public class MemoryGameDAO implements GameDAO{
 
     @Override
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
-        if(gameExists(0, request.gameName()) || request.gameName() == null){
+        /*if(gameExists(0, request.gameName()) || request.gameName() == null){
             throw new DataAccessException("Error: bad request");
         }
         Random random = new Random();
@@ -28,7 +28,8 @@ public class MemoryGameDAO implements GameDAO{
         }
         gameSet.add(new GameData(randomPositiveInt, null,
                 null, request.gameName(), new ChessGame()));
-        return new CreateGameResult(randomPositiveInt);
+        return new CreateGameResult(randomPositiveInt);*/
+        return null;
     }
 
     @Override
@@ -41,9 +42,9 @@ public class MemoryGameDAO implements GameDAO{
 
     @Override
     public void joinGame(JoinGameRequest joinGameRequest, String username) throws DataAccessException {
-        if(!gameExists(joinGameRequest.gameID(), "")){
+        /*if(!gameExists(joinGameRequest.gameID(), "")){
             throw new DataAccessException("Error: bad request");
-        }
+        }*/
         GameData currentGame = null;
         //if color null, skip. might be done better after checking the game.
         if(!(joinGameRequest.playerColor() == null)){
@@ -79,7 +80,7 @@ public class MemoryGameDAO implements GameDAO{
     }
 
 
-    @Override
+    /*@Override
     public boolean gameExists(int gameID, String gameName) throws DataAccessException {
         if(gameSet.isEmpty()){
             return false;
@@ -90,5 +91,5 @@ public class MemoryGameDAO implements GameDAO{
             }
         }
         return false;
-    }
+    }*/
 }
