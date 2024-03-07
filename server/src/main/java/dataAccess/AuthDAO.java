@@ -9,6 +9,6 @@ public interface AuthDAO {
     //what to return? what to input? where is authToken created?
     public void deleteAuth(String authToken) throws DataAccessException;
     public void authExists(String authToken) throws DataAccessException;
-    public String getUserFromAuth(String authToken);
+    public String getUserFromAuth(String authToken) throws DataAccessException;
     public void configureDatabase() throws DataAccessException;
 }

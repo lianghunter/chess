@@ -22,7 +22,7 @@ public class SQLAuthDAO implements AuthDAO{
     @Override
     public void clear() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
-            try (var preparedStatement = conn.prepareStatement("DROP DATABASE auth")) {
+            try (var preparedStatement = conn.prepareStatement("TRUNCATE auth")) {
                 preparedStatement.executeUpdate();
             }
         }
@@ -34,7 +34,7 @@ public class SQLAuthDAO implements AuthDAO{
     @Override
     public void createAuth(String token, String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
-            try (var preparedStatement = conn.prepareStatement("INSERT INTO users (authToken, username) VALUES(?, ?)", RETURN_GENERATED_KEYS)) {
+            try (var preparedStatement = conn.prepareStatement("INSERT INTO auth (authToken, username) VALUES(?, ?)", RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, token);
                 preparedStatement.setString(2, username);
                 preparedStatement.executeUpdate();
@@ -71,13 +71,30 @@ public class SQLAuthDAO implements AuthDAO{
             }
         }
         catch (Exception e){
-            throw new DataAccessException("Error: bad request");
+            throw new DataAccessException(e.getMessage());
         }
     }
 
     @Override
-    public String getUserFromAuth(String authToken) {
-        return null;
+    public String getUserFromAuth(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()){
+            try (var preparedStatement = conn.prepareStatement("SELECT username FROM auth WHERE authToken=?")) {
+                preparedStatement.setString(1, authToken);
+                try(var rs = preparedStatement.executeQuery()){
+                    if(!rs.next()){
+                        throw new DataAccessException("Error: unauthorized");
+                    }
+                    String username = rs.getString("username");
+                    return username;
+                }
+            }
+        }
+        catch (DataAccessException e){
+            throw e;
+        }
+        catch (Exception e){
+            throw new DataAccessException("Error: bad request");
+        }
     }
 
     private final String[] createStatements = {

@@ -21,7 +21,7 @@ public class SQLUserDAO implements UserDAO{
     @Override
     public void clear() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
-            try (var preparedStatement = conn.prepareStatement("DROP DATABASE users")) {
+            try (var preparedStatement = conn.prepareStatement("TRUNCATE users")) {
                 preparedStatement.executeUpdate();
             }
         }
@@ -47,6 +47,10 @@ public class SQLUserDAO implements UserDAO{
             }
         }
         catch (Exception e){
+            String duplicateMessage = "Duplicate entry '" + register.username() + "' for key 'users.PRIMARY'";
+            if(e.getMessage().equals(duplicateMessage)){
+                throw new DataAccessException("Error: already taken");
+            }
             throw new DataAccessException("Error: bad request");
         }
     }
@@ -57,15 +61,21 @@ public class SQLUserDAO implements UserDAO{
             try (var preparedStatement = conn.prepareStatement("SELECT password FROM users WHERE username=?")) {
                 preparedStatement.setString(1, username);
                 try(var rs = preparedStatement.executeQuery()){
-                    rs.next();
+                    if(!rs.next()){
+                        throw new DataAccessException("Error: unauthorized");
+                    }
                     var hash = rs.getString("password");
-
                     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
+                    String testHash = encoder.encode(password);
+                    Boolean match = encoder.matches(password, hash);
                     if(!encoder.matches(password, hash)) {
-                        throw new DataAccessException("Error: bad request");
-                    }}
+                        throw new DataAccessException("Error: unauthorized");
+                    }
+                }
             }
+        }
+        catch (DataAccessException e){
+            throw e;
         }
         catch (Exception e){
             throw new DataAccessException("Error: bad request");
