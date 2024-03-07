@@ -87,6 +87,7 @@ public class UserService {
 
     public void logout(String authToken) throws DataAccessException {
         try {
+            authDAO.authExists(authToken);
             authDAO.deleteAuth(authToken);
         }
         catch (DataAccessException e){

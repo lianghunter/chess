@@ -65,7 +65,7 @@ public class SQLAuthDAO implements AuthDAO{
                 preparedStatement.setString(1, authToken);
                 try (var rs = preparedStatement.executeQuery()) {
                     if(!rs.next()) {
-                        throw new DataAccessException("Error: bad request");
+                        throw new DataAccessException("Error: unauthorized");
                     }
                 }
             }

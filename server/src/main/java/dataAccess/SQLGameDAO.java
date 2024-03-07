@@ -90,37 +90,56 @@ public class SQLGameDAO implements GameDAO{
     @Override
     public void joinGame(JoinGameRequest joinGameRequest, String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
-            String whiteUsername = null;
-            String blackUsername = null;
-            try (var preparedStatement = conn.prepareStatement("SELECT whiteUsername, blackUsername FROM games WHERE gameID=?")) {
+            try (var preparedStatement = conn.prepareStatement("SELECT gameName FROM games WHERE gameID=?")) {
                 preparedStatement.setInt(1, joinGameRequest.gameID());
                 try (var rs = preparedStatement.executeQuery()) {
-                    rs.next();
-                    whiteUsername = rs.getString("whiteUsername");
-                    blackUsername = rs.getString("blackUsername");
-                }
-            }
-            if( (!(blackUsername == null) && joinGameRequest.playerColor().equals("BLACK")) ||
-                    (!(whiteUsername == null) && joinGameRequest.playerColor().equals("WHITE")) ){
-                throw new DataAccessException("Error: already taken");
-            }
-            if(joinGameRequest.playerColor().equals("BLACK")){
-                try (var preparedStatement = conn.prepareStatement("UPDATE games SET blackUsername=? WHERE gameID=?")) {
-                    preparedStatement.setString(1, username);
-                    preparedStatement.setInt(2, joinGameRequest.gameID());
-                    preparedStatement.executeUpdate();
-                }
-            }
-            else if (joinGameRequest.playerColor().equals("WHITE")) {
-                try (var preparedStatement = conn.prepareStatement("UPDATE games SET whiteUsername=? WHERE gameID=?")) {
-                    preparedStatement.setString(1, username);
-                    preparedStatement.setInt(2, joinGameRequest.gameID());
-                    preparedStatement.executeUpdate();
+                    if(!rs.next()) {
+                        throw new DataAccessException("Error: bad request");
+                    }
                 }
             }
         }
         catch (Exception e){
             throw new DataAccessException("Error: bad request");
+        }
+
+        if(!(joinGameRequest.playerColor() == null)){
+            try (var conn = DatabaseManager.getConnection()){
+                String whiteUsername = null;
+                String blackUsername = null;
+                try (var preparedStatement = conn.prepareStatement("SELECT whiteUsername, blackUsername FROM games WHERE gameID=?")) {
+                    preparedStatement.setInt(1, joinGameRequest.gameID());
+                    try (var rs = preparedStatement.executeQuery()) {
+                        rs.next();
+                        whiteUsername = rs.getString("whiteUsername");
+                        blackUsername = rs.getString("blackUsername");
+                    }
+                }
+                if( (!(blackUsername == null) && joinGameRequest.playerColor().equals("BLACK")) ||
+                        (!(whiteUsername == null) && joinGameRequest.playerColor().equals("WHITE")) ){
+                    throw new DataAccessException("Error: already taken");
+                }
+                if(joinGameRequest.playerColor().equals("BLACK")){
+                    try (var preparedStatement = conn.prepareStatement("UPDATE games SET blackUsername=? WHERE gameID=?")) {
+                        preparedStatement.setString(1, username);
+                        preparedStatement.setInt(2, joinGameRequest.gameID());
+                        preparedStatement.executeUpdate();
+                    }
+                }
+                else if (joinGameRequest.playerColor().equals("WHITE")) {
+                    try (var preparedStatement = conn.prepareStatement("UPDATE games SET whiteUsername=? WHERE gameID=?")) {
+                        preparedStatement.setString(1, username);
+                        preparedStatement.setInt(2, joinGameRequest.gameID());
+                        preparedStatement.executeUpdate();
+                    }
+                }
+            }
+            catch (DataAccessException e){
+                throw e;
+            }
+            catch (Exception e){
+                throw new DataAccessException("Error: bad request");
+            }
         }
     }
 
