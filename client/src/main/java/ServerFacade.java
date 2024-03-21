@@ -86,6 +86,15 @@ public class ServerFacade {
         return result;
     }
 
+    public void logout(String authToken) throws CommunicationException {
+        try {
+            HttpURLConnection connection = makeRequest(port, url, "/session", "DELETE", "", authToken);
+            if (!(connection.getResponseCode() == 200)) {
+                throw new Exception(connection.getResponseCode() + connection.getResponseMessage());
+            }
+        } catch (Exception ex) { throw new CommunicationException(ex.getMessage()); }
+    }
+
     private HttpURLConnection makeRequest(int port, String stem, String path, String method, String body, String header) throws URISyntaxException, IOException {
         URL url = (new URI(stem + port + path)).toURL();
         HttpURLConnection http = (HttpURLConnection) url.openConnection();

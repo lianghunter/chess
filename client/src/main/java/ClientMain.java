@@ -34,9 +34,7 @@ public class ClientMain {
                     quit
                     help""";
     private static boolean loggedIn = false;
-    private static boolean scanning = true;
     private static String authToken = null;
-    private static boolean authorized = false;
 
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     public static void main(String[] args) throws IOException, CommunicationException {
@@ -77,52 +75,72 @@ public class ClientMain {
         if(wordList.isEmpty() || wordList.size() > 4){
             printBadOutput();
         }
-        switch (wordList.get(0).toLowerCase()) {
-            case "help":
-                if (wordList.size() != 1) {
+        //prelogin
+        if (!loggedIn) {
+            switch (wordList.get(0).toLowerCase()) {
+                case "help":
+                    if (wordList.size() != 1) {
+                        printBadOutput();
+                    }
+                    help();
+                case "quit":
+                    if (wordList.size() != 1) {
+                        printBadOutput();
+                    }
+                    System.out.println("Exited program");
+                    break;
+                case "login":
+                    if (wordList.size() != 3 || loggedIn == true) {
+                        printBadOutput();
+                    }
+                    login(wordList.get(1), wordList.get(2));
+                    break;
+                case "register":
+                    if (wordList.size() != 4 || loggedIn == true) {
+                        printBadOutput();
+                    }
+                    register(wordList.get(1), wordList.get(2), wordList.get(3));
+                    break;
+                default:
                     printBadOutput();
-                }
-                help();
-            case "quit":
-                if (wordList.size() != 1) {
+            }
+        }
+        //postlogin
+        else {
+            switch (wordList.get(0).toLowerCase()) {
+                case "help":
+                    if (wordList.size() != 1) {
+                        printBadOutput();
+                    }
+                    help();
+                    break;
+                case "list":
+                    if (wordList.size() != 1 || loggedIn == false) {
+                        printBadOutput();
+                    }
+                    listGames();
+                    break;
+                case "create":
+                    if (wordList.size() != 2 || loggedIn == false) {
+                        printBadOutput();
+                    }
+                    createGame(wordList.get(1));
+                    break;
+                case "observe":
+                    if (wordList.size() != 2 || loggedIn == false) {
+                        printBadOutput();
+                    }
+                case "logout":
+                    if (wordList.size() != 1 || loggedIn == false) {
+                        printBadOutput();
+                    }
+                case "join":
+                    if (wordList.size() != 3 || loggedIn == false) {
+                        printBadOutput();
+                    }
+                default:
                     printBadOutput();
-                }
-                break;
-            case "login":
-                if (wordList.size() != 3 || loggedIn == true) {
-                    printBadOutput();
-                }
-                login(wordList.get(1), wordList.get(2));
-                break;
-            case "register":
-                if (wordList.size() != 4 || loggedIn == true) {
-                    printBadOutput();
-                }
-                register(wordList.get(1), wordList.get(2), wordList.get(3));
-                break;
-            case "list":
-                if (wordList.size() != 1 || loggedIn == false) {
-                    printBadOutput();
-                }
-                listGames();
-            case "create":
-                if (wordList.size() != 2 || loggedIn == false) {
-                    printBadOutput();
-                }
-            case "observe":
-                if (wordList.size() != 2 || loggedIn == false) {
-                    printBadOutput();
-                }
-            case "logout":
-                if (wordList.size() != 1 || loggedIn == false) {
-                    printBadOutput();
-                }
-            case "join":
-                if (wordList.size() != 3 || loggedIn == false) {
-                    printBadOutput();
-                }
-            default:
-                printBadOutput();
+            }
         }
     }
     private static void printBadOutput() throws IOException, CommunicationException {
@@ -132,8 +150,7 @@ public class ClientMain {
         parseInput();
     }
     private static void unauthorizedInput() throws IOException, CommunicationException {
-        System.out.println("\nUnauthorized request. " +
-                "Please try again.");
+        System.out.println("\nUnauthorized request. Please try again.");
         parseInput();
     }
     private static void help() throws IOException, CommunicationException {
@@ -156,7 +173,6 @@ public class ClientMain {
         System.out.println("logged in.");
         loggedIn = true;
         authToken = result.authToken();
-        authorized = true;
         parseInput();
     }
     private static void listGames() throws CommunicationException, IOException {
@@ -172,6 +188,13 @@ public class ClientMain {
     private static void createGame(String gameName) throws CommunicationException, IOException {
         CreateGameResult result = server.createGame(new CreateGameRequest(gameName), authToken);
         System.out.println("Game " + "\"" + gameName + "\" #" + result.gameID() + " created");
+        parseInput();
+    }
+    private static void loguot() throws CommunicationException, IOException{
+        server.logout(authToken);
+        authToken = null;
+        loggedIn = false;
+        System.out.println("logged out.");
         parseInput();
     }
 }
