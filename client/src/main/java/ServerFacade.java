@@ -1,5 +1,7 @@
 import com.google.gson.Gson;
+import request.LoginRequest;
 import request.RegisterRequest;
+import result.LoginResult;
 import result.RegisterResult;
 
 import javax.naming.CommunicationException;
@@ -26,6 +28,24 @@ public class ServerFacade {
             }
             else {
                 result = responseBody(connection, RegisterResult.class);
+            }
+        }
+        catch (Exception e){
+            throw new CommunicationException(e.getMessage());
+        }
+        return result;
+    }
+
+    public LoginResult login(LoginRequest request) throws CommunicationException{
+        LoginResult result = null;
+        String requestStr = new Gson().toJson(request);
+        try {
+            HttpURLConnection connection = makeRequest(port, url, "/session", "POST", requestStr, null);
+            if (!(connection.getResponseCode() == 200)) {
+                throw new Exception(connection.getResponseCode() + connection.getResponseMessage());
+            }
+            else {
+                result = responseBody(connection, LoginResult.class);
             }
         }
         catch (Exception e){

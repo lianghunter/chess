@@ -133,10 +133,15 @@ public class ClientMain {
         parseInput();
     }
     private static void register(String username, String password, String email) throws IOException, CommunicationException {
-        RegisterResult result = server.register(new RegisterRequest(username, password, email));
-        loggedIn = true;
+        //RegisterResult result =
+        server.register(new RegisterRequest(username, password, email));
+        System.out.println("user registered.");
+        login(username, password);
     }
-    private static void login(String username, String password) throws IOException{
-
+    private static void login(String username, String password) throws IOException, CommunicationException {
+        server.login(new LoginRequest(username, password));
+        System.out.println("logged in.");
+        loggedIn = true;
+        parseInput();
     }
 }
