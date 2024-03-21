@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.CreateGameResult;
@@ -89,6 +90,16 @@ public class ServerFacade {
     public void logout(String authToken) throws CommunicationException {
         try {
             HttpURLConnection connection = makeRequest(port, url, "/session", "DELETE", "", authToken);
+            if (!(connection.getResponseCode() == 200)) {
+                throw new Exception(connection.getResponseCode() + connection.getResponseMessage());
+            }
+        } catch (Exception ex) { throw new CommunicationException(ex.getMessage()); }
+    }
+
+    public void join(JoinGameRequest request, String authToken) throws CommunicationException{
+        String requestStr = new Gson().toJson(request);
+        try {
+            HttpURLConnection connection = makeRequest(port, url, "/game", "PUT", requestStr, authToken);
             if (!(connection.getResponseCode() == 200)) {
                 throw new Exception(connection.getResponseCode() + connection.getResponseMessage());
             }

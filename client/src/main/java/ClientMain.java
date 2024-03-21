@@ -130,10 +130,19 @@ public class ClientMain {
                     if (wordList.size() != 2 || loggedIn == false) {
                         printBadOutput();
                     }
+                    int i;
+                    try {
+                        i = Integer.parseInt(wordList.get(1));
+                    }
+                    catch (Exception e){
+                        printBadOutput();
+                    }
                 case "logout":
                     if (wordList.size() != 1 || loggedIn == false) {
                         printBadOutput();
                     }
+                    loguot();
+                    break;
                 case "join":
                     if (wordList.size() != 3 || loggedIn == false) {
                         printBadOutput();
@@ -147,10 +156,6 @@ public class ClientMain {
         System.out.println("\nIncorrect or no input. " +
                 "Please try again. " +
                 "To view available commands, please type \"help\".");
-        parseInput();
-    }
-    private static void unauthorizedInput() throws IOException, CommunicationException {
-        System.out.println("\nUnauthorized request. Please try again.");
         parseInput();
     }
     private static void help() throws IOException, CommunicationException {
@@ -195,6 +200,16 @@ public class ClientMain {
         authToken = null;
         loggedIn = false;
         System.out.println("logged out.");
+        parseInput();
+    }
+    private static void join(int ID, String colorStr) throws CommunicationException, IOException{
+        String color;
+        if(colorStr != null){
+            color = colorStr.toUpperCase();
+        }
+        else color = null;
+        server.join(new JoinGameRequest(color, ID), authToken);
+        //print board
         parseInput();
     }
 }
