@@ -1,6 +1,8 @@
 import com.google.gson.Gson;
+import request.CreateGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
+import result.CreateGameResult;
 import result.ListGamesResult;
 import result.LoginResult;
 import result.RegisterResult;
@@ -64,6 +66,21 @@ public class ServerFacade {
             }
             else {
                 result = responseBody(connection, ListGamesResult.class);
+            }
+        } catch (Exception ex) { throw new CommunicationException(ex.getMessage()); }
+        return result;
+    }
+
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws CommunicationException {
+        CreateGameResult result;
+        String requestStr = new Gson().toJson(request);
+        try {
+            HttpURLConnection connection = makeRequest(port, url, "/game", "POST", requestStr, authToken);
+            if (!(connection.getResponseCode() == 200)) {
+                throw new Exception(connection.getResponseCode() + connection.getResponseMessage());
+            }
+            else {
+                result = responseBody(connection, CreateGameResult.class);
             }
         } catch (Exception ex) { throw new CommunicationException(ex.getMessage()); }
         return result;

@@ -104,6 +104,7 @@ public class ClientMain {
                 if (wordList.size() != 1 || loggedIn == false) {
                     printBadOutput();
                 }
+                listGames();
             case "create":
                 if (wordList.size() != 2 || loggedIn == false) {
                     printBadOutput();
@@ -158,7 +159,7 @@ public class ClientMain {
         authorized = true;
         parseInput();
     }
-    private void listGames() throws CommunicationException {
+    private static void listGames() throws CommunicationException, IOException {
         ListGamesResult response = server.listGames(authToken);
         for(GameData game: response.games()) {
             System.out.println("name: " + game.gameName() + " | ID: " +
@@ -166,5 +167,11 @@ public class ClientMain {
                     game.whiteUsername() + " | Black Username: " +
                     game.blackUsername());
         }
+        parseInput();
+    }
+    private static void createGame(String gameName) throws CommunicationException, IOException {
+        CreateGameResult result = server.createGame(new CreateGameRequest(gameName), authToken);
+        System.out.println("Game " + "\"" + gameName + "\" #" + result.gameID() + " created");
+        parseInput();
     }
 }
