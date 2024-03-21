@@ -130,13 +130,15 @@ public class ClientMain {
                     if (wordList.size() != 2 || loggedIn == false) {
                         printBadOutput();
                     }
-                    int i;
+                    int i = 0;
                     try {
                         i = Integer.parseInt(wordList.get(1));
                     }
                     catch (Exception e){
                         printBadOutput();
                     }
+                    join(i, null);
+                    break;
                 case "logout":
                     if (wordList.size() != 1 || loggedIn == false) {
                         printBadOutput();
@@ -144,9 +146,21 @@ public class ClientMain {
                     loguot();
                     break;
                 case "join":
-                    if (wordList.size() != 3 || loggedIn == false) {
+                    if (wordList.size() < 2 || wordList.size() > 3 || loggedIn == false) {
                         printBadOutput();
                     }
+                    int j = 0;
+                    try {
+                        j = Integer.parseInt(wordList.get(1));
+                    }
+                    catch (Exception e){
+                        printBadOutput();
+                    }
+                    String color = null;
+                    if(wordList.size() == 3){
+                        color = wordList.get(2);
+                    }
+                    join(j, color);
                 default:
                     printBadOutput();
             }
