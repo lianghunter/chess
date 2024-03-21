@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import model.GameData;
 import request.*;
 import result.*;
 
@@ -33,16 +35,18 @@ public class ClientMain {
                     help""";
     private static boolean loggedIn = false;
     private static boolean scanning = true;
+    private static String authToken = null;
+    private static boolean authorized = false;
 
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, CommunicationException {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
         System.out.println("♕ 240 Chess Client: " + piece
                             + "\n" + INTRO + "\n");
         parseInput();
         reader.close();
     }
-    private static void parseInput() throws IOException {
+    private static void parseInput() throws IOException, CommunicationException {
         if(loggedIn){
             System.out.print("[LOGGED_IN] >> ");
         }
@@ -88,11 +92,14 @@ public class ClientMain {
                 if (wordList.size() != 3 || loggedIn == true) {
                     printBadOutput();
                 }
+                login(wordList.get(1), wordList.get(2));
+                break;
             case "register":
                 if (wordList.size() != 4 || loggedIn == true) {
                     printBadOutput();
                 }
-
+                register(wordList.get(1), wordList.get(2), wordList.get(3));
+                break;
             case "list":
                 if (wordList.size() != 1 || loggedIn == false) {
                     printBadOutput();
@@ -117,13 +124,18 @@ public class ClientMain {
                 printBadOutput();
         }
     }
-    private static void printBadOutput() throws IOException {
+    private static void printBadOutput() throws IOException, CommunicationException {
         System.out.println("\nIncorrect or no input. " +
                 "Please try again. " +
                 "To view available commands, please type \"help\".");
         parseInput();
     }
-    private static void help() throws IOException {
+    private static void unauthorizedInput() throws IOException, CommunicationException {
+        System.out.println("\nUnauthorized request. " +
+                "Please try again.");
+        parseInput();
+    }
+    private static void help() throws IOException, CommunicationException {
         if(loggedIn){
             System.out.println(POSTLOGIN_UI);
         }
@@ -139,9 +151,20 @@ public class ClientMain {
         login(username, password);
     }
     private static void login(String username, String password) throws IOException, CommunicationException {
-        server.login(new LoginRequest(username, password));
+        LoginResult result = server.login(new LoginRequest(username, password));
         System.out.println("logged in.");
         loggedIn = true;
+        authToken = result.authToken();
+        authorized = true;
         parseInput();
+    }
+    private void listGames() throws CommunicationException {
+        ListGamesResult response = server.listGames(authToken);
+        for(GameData game: response.games()) {
+            System.out.println("name: " + game.gameName() + " | ID: " +
+                    game.gameID() + " | White Username: " +
+                    game.whiteUsername() + " | Black Username: " +
+                    game.blackUsername());
+        }
     }
 }
