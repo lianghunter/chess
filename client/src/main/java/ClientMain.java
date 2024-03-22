@@ -9,12 +9,12 @@ import java.util.List;
 import model.GameData;
 import request.*;
 import result.*;
-
+import ui.*;
 import javax.naming.CommunicationException;
 
 
 public class ClientMain {
-    private static final ServerFacade server = new ServerFacade(3676);
+    private static final ServerFacade server = new ServerFacade(8080);
     private static final String INTRO= "Welcome to 240 chess. Type \"help\" to view options.";
     private static final String PRELOGIN_UI = """
                     OPTIONS: Please input exactly as shown. 
@@ -28,7 +28,7 @@ public class ClientMain {
                     eg.: login steve33 password22
                     create <name>
                     list
-                    join <ID> [WHITE|BLACK|<empty>] (for empty, simply type "[]" without a space)
+                    join <ID> [WHITE|BLACK|<empty>]
                     observe<ID>
                     logout
                     quit
@@ -172,6 +172,13 @@ public class ClientMain {
                 "To view available commands, please type \"help\".");
         parseInput();
     }
+    private static void printBadOutput(String msg) throws IOException, CommunicationException {
+        System.out.println("\nIncorrect or no input. " +
+                "Please try again. " +
+                "Error message: " + msg +
+                " To view available commands, please type \"help\".");
+        parseInput();
+    }
     private static void help() throws IOException, CommunicationException {
         if(loggedIn){
             System.out.println(POSTLOGIN_UI);
@@ -183,47 +190,73 @@ public class ClientMain {
     }
     private static void register(String username, String password, String email) throws IOException, CommunicationException {
         //RegisterResult result =
-        server.register(new RegisterRequest(username, password, email));
-        System.out.println("user registered.");
-        login(username, password);
+        try {
+            server.register(new RegisterRequest(username, password, email));
+            System.out.println("user registered.");
+            login(username, password);
+        } catch (Exception e) {
+            printBadOutput(e.getMessage());
+        }
     }
     private static void login(String username, String password) throws IOException, CommunicationException {
-        LoginResult result = server.login(new LoginRequest(username, password));
-        System.out.println("logged in.");
-        loggedIn = true;
-        authToken = result.authToken();
-        parseInput();
+        try {
+            LoginResult result = server.login(new LoginRequest(username, password));
+            System.out.println("logged in.");
+            loggedIn = true;
+            authToken = result.authToken();
+            parseInput();
+        } catch (Exception e) {
+            printBadOutput(e.getMessage());
+        }
     }
     private static void listGames() throws CommunicationException, IOException {
-        ListGamesResult response = server.listGames(authToken);
-        for(GameData game: response.games()) {
-            System.out.println("name: " + game.gameName() + " | ID: " +
-                    game.gameID() + " | White Username: " +
-                    game.whiteUsername() + " | Black Username: " +
-                    game.blackUsername());
+        try {
+            ListGamesResult response = server.listGames(authToken);
+            for(GameData game: response.games()) {
+                System.out.println("name: " + game.gameName() + " | ID: " +
+                        game.gameID() + " | White Username: " +
+                        game.whiteUsername() + " | Black Username: " +
+                        game.blackUsername());
+            }
+            parseInput();
+        } catch (Exception e) {
+            printBadOutput(e.getMessage());
         }
-        parseInput();
     }
     private static void createGame(String gameName) throws CommunicationException, IOException {
-        CreateGameResult result = server.createGame(new CreateGameRequest(gameName), authToken);
-        System.out.println("Game " + "\"" + gameName + "\" #" + result.gameID() + " created");
-        parseInput();
+        try {
+            CreateGameResult result = server.createGame(new CreateGameRequest(gameName), authToken);
+            System.out.println("Game " + "\"" + gameName + "\" #" + result.gameID() + " created");
+            parseInput();
+        } catch (Exception e) {
+            printBadOutput(e.getMessage());
+        }
     }
     private static void loguot() throws CommunicationException, IOException{
-        server.logout(authToken);
-        authToken = null;
-        loggedIn = false;
-        System.out.println("logged out.");
-        parseInput();
+        try {
+            server.logout(authToken);
+            authToken = null;
+            loggedIn = false;
+            System.out.println("logged out.");
+            parseInput();
+        } catch (Exception e) {
+            printBadOutput(e.getMessage());
+        }
     }
     private static void join(int ID, String colorStr) throws CommunicationException, IOException{
-        String color;
-        if(colorStr != null){
-            color = colorStr.toUpperCase();
+        try {
+            String color = null;
+            if(colorStr != null){
+                color = colorStr.toUpperCase();
+                if(!color.equals("BLACK") && !color.equals("WHITE")){
+                    printBadOutput("color is not black or white");
+                }
+            }
+            server.join(new JoinGameRequest(color, ID), authToken);
+            Board.printAll(Board.board);
+            parseInput();
+        } catch (Exception e) {
+            printBadOutput(e.getMessage());
         }
-        else color = null;
-        server.join(new JoinGameRequest(color, ID), authToken);
-        //print board
-        parseInput();
     }
 }
