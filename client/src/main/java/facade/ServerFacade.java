@@ -1,3 +1,5 @@
+package facade;
+
 import com.google.gson.Gson;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
@@ -100,6 +102,15 @@ public class ServerFacade {
         String requestStr = new Gson().toJson(request);
         try {
             HttpURLConnection connection = makeRequest(port, url, "/game", "PUT", requestStr, authToken);
+            if (!(connection.getResponseCode() == 200)) {
+                throw new Exception(connection.getResponseCode() + connection.getResponseMessage());
+            }
+        } catch (Exception ex) { throw new CommunicationException(ex.getMessage()); }
+    }
+
+    public void clear() throws CommunicationException {
+        try {
+            HttpURLConnection connection = makeRequest(port, url, "/db", "DELETE", "", null);
             if (!(connection.getResponseCode() == 200)) {
                 throw new Exception(connection.getResponseCode() + connection.getResponseMessage());
             }

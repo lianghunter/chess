@@ -1,3 +1,5 @@
+package client;
+
 import chess.*;
 
 import java.io.BufferedReader;
@@ -6,6 +8,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import facade.ServerFacade;
 import model.GameData;
 import request.*;
 import result.*;
@@ -35,7 +38,7 @@ public class ClientMain {
                     help""";
     private static boolean loggedIn = false;
     private static String authToken = null;
-
+    public static String output = "";
     private static BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     public static void main(String[] args) throws IOException, CommunicationException {
         var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
@@ -167,12 +170,19 @@ public class ClientMain {
         }
     }
     private static void printBadOutput() throws IOException, CommunicationException {
+        output = "\nIncorrect or no input. " +
+                "Please try again. " +
+                "To view available commands, please type \"help\".";
         System.out.println("\nIncorrect or no input. " +
                 "Please try again. " +
                 "To view available commands, please type \"help\".");
         parseInput();
     }
     private static void printBadOutput(String msg) throws IOException, CommunicationException {
+        output = "\nIncorrect or no input. " +
+                "Please try again. " +
+                "Error message: " + msg +
+                " To view available commands, please type \"help\".";
         System.out.println("\nIncorrect or no input. " +
                 "Please try again. " +
                 "Error message: " + msg +
@@ -201,6 +211,7 @@ public class ClientMain {
     private static void login(String username, String password) throws IOException, CommunicationException {
         try {
             LoginResult result = server.login(new LoginRequest(username, password));
+            output = "logged in.";
             System.out.println("logged in.");
             loggedIn = true;
             authToken = result.authToken();
