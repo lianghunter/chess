@@ -112,7 +112,7 @@ public class ServerFacadeTests {
         facade.createGame(new CreateGameRequest("kiwi"), auth);
         int coconutID = facade.createGame(new CreateGameRequest("coconut"), auth).gameID();
         List<GameData> games = facade.listGames(auth).games();
-        assertEquals(new GameData(coconutID, null, null, "coconut", new ChessGame()), games.get(0));
+        assertEquals(new GameData(coconutID, null, null, "coconut", new ChessGame()), games.get(1));
     }
     @Test
     public void listBad() throws CommunicationException{
