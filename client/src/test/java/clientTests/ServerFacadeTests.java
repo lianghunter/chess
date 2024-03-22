@@ -109,10 +109,9 @@ public class ServerFacadeTests {
     @Test
     public void listGood() throws CommunicationException{
         String auth = facade.register(jimRegisterRequest).authToken();
-        facade.createGame(new CreateGameRequest("kiwi"), auth);
-        int coconutID = facade.createGame(new CreateGameRequest("coconut"), auth).gameID();
+        int kiwiID = facade.createGame(new CreateGameRequest("kiwi"), auth).gameID();
         List<GameData> games = facade.listGames(auth).games();
-        assertEquals(new GameData(coconutID, null, null, "coconut", new ChessGame()), games.get(1));
+        assertEquals(new GameData(kiwiID, null, null, "kiwi", new ChessGame()), games.get(0));
     }
     @Test
     public void listBad() throws CommunicationException{
