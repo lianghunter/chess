@@ -79,6 +79,12 @@ public class MemoryGameDAO implements GameDAO{
 
     }
 
+    @Override
+    public void updateGame(ChessGame updatedGame, int gameID) throws DataAccessException {
+
+    }
+
+
 
     /*@Override
     public boolean gameExists(int gameID, String gameName) throws DataAccessException {

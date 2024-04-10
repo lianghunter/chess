@@ -1,5 +1,6 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.GameData;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
@@ -12,4 +13,5 @@ public interface GameDAO {
     public ListGamesResult listGame() throws DataAccessException;
     public void joinGame(JoinGameRequest joinGameRequest, String username) throws DataAccessException;
     public void configureDatabase() throws DataAccessException;
+    public void updateGame(ChessGame updatedGame, int gameID) throws DataAccessException;
 }
