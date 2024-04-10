@@ -2,10 +2,15 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 import request.*;
 import result.*;
 import service.UserService;
 import spark.*;
+import server.webSocket.WebSocketHandler;
+import webSocketMessages.*;
+import webSocketRequests.*;
+import webSocketResponse.*;
 
 public class Server {
     private final UserService service = new UserService();
@@ -13,6 +18,8 @@ public class Server {
     public int run(int desiredPort) {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
+        WebSocketHandler socketHandler = new WebSocketHandler();
+        Spark.webSocket("/connect", socketHandler);
         Spark.delete("/db", this::clear);
         Spark.post("/user", this::register);
         Spark.post("/session", this::login);
