@@ -29,12 +29,12 @@ public class ConnectionManager {
     {
 
         var removeList = new ArrayList<Connection>();
-        ArrayList<Connection> singleGame = this.concurrentMap.get(gameID);
-        for (Connection connection : singleGame)
+        ArrayList<Connection> connections = this.concurrentMap.get(gameID);
+        for (Connection connection : connections)
         {
             if (connection.session.isOpen())
             {
-                if (!connection..equals(excludeVistorName))
+                if (!connection.equals(excludeVistorName))
                 {
                     String msg = new Gson().toJson(serverMessage, Notification.class);
                     connection.send(msg);
@@ -42,55 +42,56 @@ public class ConnectionManager {
             }
             else
             {
+                removeList.add(connection);
             }
         }
 
         for (var c : removeList)
         {
-            singleGame.remove(c);
+            connections.remove(c);
         }
 
     }
 
     public void sendOneLoad(int gameID, String authToken, LoadGame loadGame) throws IOException {
-        var removeList = new Vector<Connection>();
-        for (var c : connections.get(gameID))
+        var removeList = new ArrayList<Connection>();
+        for (var connection : concurrentMap.get(gameID))
         {
-            if (c.session.isOpen())
+            if (connection.session.isOpen())
             {
-                if (c.memberAuthToken.equals(authToken))
+                if (connection.authToken.equals(authToken))
                 {
                     String msg = new Gson().toJson(loadGame, LoadGame.class);
-                    c.send(msg);
+                    connection.send(msg);
                 }
             }
             else
             {
-                removeList.add(c);
+                removeList.add(connection);
             }
         }
     }
 
-    public void sendError(String authToken, WSError error) throws IOException {
+    public void sendError(String authToken, SocketError error) throws IOException {
         ArrayList<Connection> removeList = new ArrayList<Connection>();
-        for (int gameID : connections.keySet()) {
-            for (var c : connections.get(gameID))
+        for (int gameID : concurrentMap.keySet()) {
+            for (var connection : concurrentMap.get(gameID))
             {
-                if (c.session.isOpen()) {
-                    if (c.memberAuthToken.equals(authToken))
+                if (connection.session.isOpen()) {
+                    if (connection.authToken.equals(authToken))
                     {
                         String message = new Gson().toJson(error);
-                        c.send(message);
+                        connection.send(message);
                     }
                 } else {
-                    removeList.add(c);
+                    removeList.add(connection);
                 }
             }
 
-            for (var c : removeList) {
-                Vector<Connection> tmp = connections.get(gameID);
-                tmp.remove(c);
-                connections.put(gameID, tmp);
+            for (var connection : removeList) {
+                ArrayList<Connection> temp = concurrentMap.get(gameID);
+                temp.remove(connection);
+                concurrentMap.put(gameID, temp);
             }
         }
 
