@@ -200,7 +200,7 @@ public class WebSocketHandler {
         }
 
         realGame.setTeamTurn(null);
-        Notification notification = new Notification(username + " resigned the game.");
+        Notification notification = new Notification(username + " resigned from the game.");
         realGame.resigned = true;
         theSqlGame.updateGame(realGame, gameID);
         connectionManager.broadcast(auth, notification, gameID, true);
