@@ -1,22 +1,13 @@
 package dataAccess;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.google.gson.Gson;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.sql.*;
-
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class SQLAuthDAO implements AuthDAO{
 
     public SQLAuthDAO() throws DataAccessException {
-        configureDatabase();
+        configureAuthDatabase();
     }
 
     @Override
@@ -108,7 +99,7 @@ public class SQLAuthDAO implements AuthDAO{
     };
 
     @Override
-    public void configureDatabase() throws DataAccessException {
+    public void configureAuthDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
@@ -117,7 +108,7 @@ public class SQLAuthDAO implements AuthDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Unable to configure  auth database: %s", ex.getMessage()));
         }
     }
 }

@@ -16,6 +16,6 @@ public interface GameDAO {
 
     GameData getGame(int gameID) throws DataAccessException;
 
-    public void configureDatabase() throws DataAccessException;
+    public void configureGameDatabase() throws DataAccessException;
     public void updateGame(ChessGame updatedGame, int gameID) throws DataAccessException;
 }

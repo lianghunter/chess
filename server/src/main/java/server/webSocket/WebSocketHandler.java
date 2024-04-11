@@ -25,6 +25,7 @@ import java.io.IOException;
 public class WebSocketHandler {
     private final ConnectionManager connectionManager = new ConnectionManager();
     private final ConnectionManager connections = new ConnectionManager();
+
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException, DataAccessException, IllegalAccessException {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);

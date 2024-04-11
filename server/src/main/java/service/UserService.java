@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 public class UserService {
+
     //change to sql daos
     private final AuthDAO authDAO;
     {

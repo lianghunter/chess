@@ -80,95 +80,104 @@ public class ClientMain {
         }
         //prelogin
         if (!loggedIn) {
-            switch (wordList.get(0).toLowerCase()) {
-                case "help":
-                    if (wordList.size() != 1) {
-                        printBadOutput();
-                    }
-                    help();
-                case "quit":
-                    if (wordList.size() != 1) {
-                        printBadOutput();
-                    }
-                    System.out.println("Exited program");
-                    break;
-                case "login":
-                    if (wordList.size() != 3 || loggedIn == true) {
-                        printBadOutput();
-                    }
-                    login(wordList.get(1), wordList.get(2));
-                    break;
-                case "register":
-                    if (wordList.size() != 4 || loggedIn == true) {
-                        printBadOutput();
-                    }
-                    register(wordList.get(1), wordList.get(2), wordList.get(3));
-                    break;
-                default:
-                    printBadOutput();
-            }
+            prelogin(wordList);
         }
         //postlogin
         else {
-            switch (wordList.get(0).toLowerCase()) {
-                case "help":
-                    if (wordList.size() != 1) {
-                        printBadOutput();
-                    }
-                    help();
-                    break;
-                case "list":
-                    if (wordList.size() != 1 || loggedIn == false) {
-                        printBadOutput();
-                    }
-                    listGames();
-                    break;
-                case "create":
-                    if (wordList.size() != 2 || loggedIn == false) {
-                        printBadOutput();
-                    }
-                    createGame(wordList.get(1));
-                    break;
-                case "observe":
-                    if (wordList.size() != 2 || loggedIn == false) {
-                        printBadOutput();
-                    }
-                    int i = 0;
-                    try {
-                        i = Integer.parseInt(wordList.get(1));
-                    }
-                    catch (Exception e){
-                        printBadOutput();
-                    }
-                    join(i, null);
-                    break;
-                case "logout":
-                    if (wordList.size() != 1 || loggedIn == false) {
-                        printBadOutput();
-                    }
-                    loguot();
-                    break;
-                case "join":
-                    if (wordList.size() < 2 || wordList.size() > 3 || loggedIn == false) {
-                        printBadOutput();
-                    }
-                    int j = 0;
-                    try {
-                        j = Integer.parseInt(wordList.get(1));
-                    }
-                    catch (Exception e){
-                        printBadOutput();
-                    }
-                    String color = null;
-                    if(wordList.size() == 3){
-                        color = wordList.get(2);
-                    }
-                    join(j, color);
-                default:
-                    printBadOutput();
-            }
+            postLogin(wordList);
         }
     }
+
+    private static void prelogin(List<String> wordList) throws IOException, CommunicationException {
+        switch (wordList.get(0).toLowerCase()) {
+            case "help":
+                if (wordList.size() != 1) {
+                    printBadOutput();
+                }
+                help();
+            case "quit":
+                if (wordList.size() != 1) {
+                    printBadOutput();
+                }
+                System.out.println("Exited program");
+                break;
+            case "login":
+                if (wordList.size() != 3 || loggedIn == true) {
+                    printBadOutput();
+                }
+                login(wordList.get(1), wordList.get(2));
+                break;
+            case "register":
+                if (wordList.size() != 4 || loggedIn == true) {
+                    printBadOutput();
+                }
+                register(wordList.get(1), wordList.get(2), wordList.get(3));
+                break;
+            default:
+                printBadOutput();
+        }
+    }
+
+    private static void postLogin(List<String> wordList) throws IOException, CommunicationException {
+        switch (wordList.get(0).toLowerCase()) {
+            case "help":
+                if (wordList.size() != 1) {
+                    printBadOutput();
+                }
+                help();
+                break;
+            case "list":
+                if (wordList.size() != 1 || loggedIn == false) {
+                    printBadOutput();
+                }
+                listGames();
+                break;
+            case "create":
+                if (wordList.size() != 2 || loggedIn == false) {
+                    printBadOutput();
+                }
+                createGame(wordList.get(1));
+                break;
+            case "observe":
+                if (wordList.size() != 2 || loggedIn == false) {
+                    printBadOutput();
+                }
+                int i = 0;
+                try {
+                    i = Integer.parseInt(wordList.get(1));
+                }
+                catch (Exception e){
+                    printBadOutput();
+                }
+                join(i, null);
+                break;
+            case "logout":
+                if (wordList.size() != 1 || loggedIn == false) {
+                    printBadOutput();
+                }
+                loguot();
+                break;
+            case "join":
+                if (wordList.size() < 2 || wordList.size() > 3 || loggedIn == false) {
+                    printBadOutput();
+                }
+                int j = 0;
+                try {
+                    j = Integer.parseInt(wordList.get(1));
+                }
+                catch (Exception e){
+                    printBadOutput();
+                }
+                String color = null;
+                if(wordList.size() == 3){
+                    color = wordList.get(2);
+                }
+                join(j, color);
+            default:
+                printBadOutput();
+        }
+    }
+
     private static void printBadOutput() throws IOException, CommunicationException {
         output = "\nIncorrect or no input. " +
                 "Please try again. " +
@@ -254,7 +263,7 @@ public class ClientMain {
             printBadOutput(e.getMessage());
         }
     }
-    private static void join(int ID, String colorStr) throws CommunicationException, IOException{
+    private static void join(int id, String colorStr) throws CommunicationException, IOException{
         try {
             String color = null;
             if(colorStr != null){
@@ -263,7 +272,7 @@ public class ClientMain {
                     printBadOutput("color is not black or white");
                 }
             }
-            server.join(new JoinGameRequest(color, ID), authToken);
+            server.join(new JoinGameRequest(color, id), authToken);
             Board.printAll(Board.board);
             parseInput();
         } catch (Exception e) {

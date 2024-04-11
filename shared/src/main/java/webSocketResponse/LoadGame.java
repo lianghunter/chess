@@ -10,9 +10,5 @@ public class LoadGame extends ServerMessage{
     public ChessGame getGame() {
         return this.game;
     }
-
-    public void setGame(ChessGame game) {
-        this.game = game;
-    }
     private ChessGame game;
 }

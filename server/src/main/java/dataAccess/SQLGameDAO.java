@@ -19,7 +19,7 @@ import static java.sql.Statement.RETURN_GENERATED_KEYS;
 public class SQLGameDAO implements GameDAO{
 
     public SQLGameDAO() throws DataAccessException {
-        configureDatabase();
+        configureGameDatabase();
     }
 
     @Override
@@ -204,7 +204,7 @@ public class SQLGameDAO implements GameDAO{
     };
 
     @Override
-    public void configureDatabase() throws DataAccessException {
+    public void configureGameDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()) {
             for (var statement : createStatements) {
@@ -213,7 +213,7 @@ public class SQLGameDAO implements GameDAO{
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Unable to configure game database: %s", ex.getMessage()));
         }
     }
 
