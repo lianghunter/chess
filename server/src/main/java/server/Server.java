@@ -8,9 +8,6 @@ import result.*;
 import service.UserService;
 import spark.*;
 import server.webSocket.WebSocketHandler;
-import webSocketMessages.*;
-import webSocketRequests.*;
-import webSocketResponse.*;
 
 public class Server {
     private final UserService service = new UserService();
@@ -18,8 +15,8 @@ public class Server {
     public int run(int desiredPort) {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
-        WebSocketHandler socketHandler = new WebSocketHandler();
-        Spark.webSocket("/connect", socketHandler);
+        WebSocketHandler handler = new WebSocketHandler();
+        Spark.webSocket("/connect", handler);
         Spark.delete("/db", this::clear);
         Spark.post("/user", this::register);
         Spark.post("/session", this::login);

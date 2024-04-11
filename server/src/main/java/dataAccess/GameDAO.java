@@ -12,6 +12,10 @@ public interface GameDAO {
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException;
     public ListGamesResult listGame() throws DataAccessException;
     public void joinGame(JoinGameRequest joinGameRequest, String username) throws DataAccessException;
+
+
+    GameData getGame(int gameID) throws DataAccessException;
+
     public void configureDatabase() throws DataAccessException;
     public void updateGame(ChessGame updatedGame, int gameID) throws DataAccessException;
 }

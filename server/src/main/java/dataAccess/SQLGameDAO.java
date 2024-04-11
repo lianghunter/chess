@@ -8,7 +8,7 @@ import request.JoinGameRequest;
 import result.CreateGameResult;
 import result.ListGamesResult;
 
-import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,6 +151,43 @@ public class SQLGameDAO implements GameDAO{
         catch (Exception e){
             throw new DataAccessException("Error: bad request");
         }
+    }
+
+
+
+    @Override
+    public GameData getGame(int gameID) throws DataAccessException {
+        GameData game = null;
+        try (var conn = DatabaseManager.getConnection())
+        {
+            try (var preparedStatement = conn.prepareStatement("SELECT gameID, whiteUsername, blackUsername, gameName, game FROM Games WHERE gameID = ?", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY))
+            {
+                preparedStatement.setInt(1, gameID);
+                var result = preparedStatement.executeQuery();
+                int count = 0;
+                if (result.last())
+                {
+                    count = result.getRow();
+                }
+                if (count == 1)
+                {
+                    game = new GameData(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), new Gson().fromJson(result.getString(5), ChessGame.class));
+                }
+                else if (count == 0)
+                {
+                    throw new DataAccessException("Error: There is no game in DB");
+                }
+                else if (count > 1)
+                {
+                    throw new DataAccessException("Error: There are more than one game data.");
+                }
+            }
+        }
+        catch (SQLException E)
+        {
+            throw new DataAccessException(E.getMessage());
+        }
+        return game;
     }
 
     private final String[] createStatements = {

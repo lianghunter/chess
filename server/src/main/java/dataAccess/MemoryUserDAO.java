@@ -1,5 +1,6 @@
 package dataAccess;
 
+import chess.ChessGame;
 import model.AuthData;
 import model.UserData;
 import request.RegisterRequest;
@@ -50,6 +51,11 @@ public class MemoryUserDAO implements UserDAO{
         if(!userFound){
             throw new DataAccessException("Error: unauthorized");
         }
+    }
+
+    @Override
+    public void removeUser(ChessGame.TeamColor color, int gameID) throws DataAccessException {
+
     }
 
     @Override

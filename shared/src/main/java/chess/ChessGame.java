@@ -16,6 +16,8 @@ public class ChessGame {
     private ChessBoard board;
     private TeamColor turn;
 
+    public boolean resigned = false;
+
     public ChessGame() {
         this.turn = TeamColor.WHITE;
         this.board = new ChessBoard();

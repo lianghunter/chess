@@ -4,37 +4,43 @@ import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import webSocketResponse.*;
-
-import webSocketMessages.serverMessages.ServerMessage;
 
 public class ConnectionManager {
     public final ConcurrentHashMap<Integer, ArrayList<Connection>> concurrentMap = new ConcurrentHashMap<>();
     public void addMember(int gameID, String authToken, Session session){
         var connection = new Connection(authToken, session);
         ArrayList<Connection> singleGame = concurrentMap.get(gameID);
-        if (singleGame.equals(null))
+        if (singleGame == null)
         {
             singleGame = new ArrayList<>();
         }
         singleGame.add(connection);
+        concurrentMap.put(gameID, singleGame);
     }
     public void remove(String authToken,Integer gameID)
     {
-        concurrentMap.remove(authToken);
+        ArrayList<Connection> singleGame = this.concurrentMap.get(gameID);
+        for (Connection c : singleGame)
+        {
+            if (Objects.equals(c.authToken, authToken))
+            {
+                singleGame.remove(c);
+            }
+        }
     }
-    public void broadcast(String excludeVistorName, Notification serverMessage, Integer gameID) throws IOException
+    public void broadcast(String excludeVistorName, Notification serverMessage, Integer gameID, Boolean selfIncluded) throws IOException
     {
-
         var removeList = new ArrayList<Connection>();
-        ArrayList<Connection> connections = this.concurrentMap.get(gameID);
-        for (Connection connection : connections)
+        ArrayList<Connection> singleGame = this.concurrentMap.get(gameID);
+        for (Connection connection : singleGame)
         {
             if (connection.session.isOpen())
             {
-                if (!connection.equals(excludeVistorName))
+                if (!connection.authToken.equals(excludeVistorName) || selfIncluded)
                 {
                     String msg = new Gson().toJson(serverMessage, Notification.class);
                     connection.send(msg);
@@ -45,31 +51,47 @@ public class ConnectionManager {
                 removeList.add(connection);
             }
         }
-
         for (var c : removeList)
         {
-            connections.remove(c);
+            singleGame.remove(c);
         }
-
     }
 
-    public void sendOneLoad(int gameID, String authToken, LoadGame loadGame) throws IOException {
+    public void sendMessage(int gameID, String authToken, LoadGame loadGame) throws IOException {
         var removeList = new ArrayList<Connection>();
-        for (var connection : concurrentMap.get(gameID))
+        for (var c : concurrentMap.get(gameID))
         {
-            if (connection.session.isOpen())
+            if (c.session.isOpen())
             {
-                if (connection.authToken.equals(authToken))
+                if (c.authToken.equals(authToken))
                 {
                     String msg = new Gson().toJson(loadGame, LoadGame.class);
-                    connection.send(msg);
+                    c.send(msg);
                 }
             }
             else
             {
-                removeList.add(connection);
+                removeList.add(c);
             }
         }
+        removeElements(gameID, removeList);
+    }
+
+    public void sendMessage(int gameID, LoadGame loadGame) throws IOException {
+        var removeList = new ArrayList<Connection>();
+        for (var c : concurrentMap.get(gameID))
+        {
+            if (c.session.isOpen())
+            {
+                String msg = new Gson().toJson(loadGame, LoadGame.class);
+                c.send(msg);
+            }
+            else
+            {
+                removeList.add(c);
+            }
+        }
+        removeElements(gameID, removeList);
     }
 
     public void sendError(String authToken, SocketError error) throws IOException {
@@ -88,13 +110,15 @@ public class ConnectionManager {
                 }
             }
 
-            for (var connection : removeList) {
-                ArrayList<Connection> temp = concurrentMap.get(gameID);
-                temp.remove(connection);
-                concurrentMap.put(gameID, temp);
-            }
+            removeElements(gameID, removeList);
         }
+    }
 
-
+    private void removeElements(int gameID, ArrayList<Connection> removeList) {
+        for (var connection : removeList) {
+            ArrayList<Connection> temp = concurrentMap.get(gameID);
+            temp.remove(connection);
+            concurrentMap.put(gameID, temp);
+        }
     }
 }

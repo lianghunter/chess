@@ -3,6 +3,7 @@ package passoffTests.serverTests;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
+import dataAccess.DataAccessException;
 import org.junit.jupiter.api.*;
 import passoffTests.TestFactory;
 import passoffTests.obfuscatedTestClasses.TestServerFacade;

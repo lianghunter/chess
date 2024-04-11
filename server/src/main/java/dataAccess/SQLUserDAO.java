@@ -1,16 +1,12 @@
 package dataAccess;
 
+import chess.ChessGame;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import request.RegisterRequest;
 
-import com.google.gson.Gson;
-
-import java.util.ArrayList;
-import java.util.Collection;
 import java.sql.*;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class SQLUserDAO implements UserDAO{
 
@@ -82,6 +78,39 @@ public class SQLUserDAO implements UserDAO{
         }
         catch (DataAccessException e){
             throw e;
+        }
+        catch (Exception e){
+            throw new DataAccessException("Error: bad request");
+        }
+    }
+
+    @Override
+    public void removeUser(ChessGame.TeamColor color, int gameID) throws DataAccessException {
+        boolean colorIsWhite;
+        if(color.equals(ChessGame.TeamColor.WHITE)){
+            colorIsWhite = true;
+        }
+        else if(color.equals(ChessGame.TeamColor.BLACK)){
+            colorIsWhite = false;
+        }
+        else{
+            throw new DataAccessException("Error: bad request");
+        }
+        try (var conn = DatabaseManager.getConnection()){
+            if(colorIsWhite){
+                try (var preparedStatement = conn.prepareStatement("UPDATE games SET whiteUsername=? WHERE gameID=?")) {
+                    preparedStatement.setString(1, null);
+                    preparedStatement.setInt(2, gameID);
+                    preparedStatement.executeUpdate();
+                }
+            }
+            else {
+                try (var preparedStatement = conn.prepareStatement("UPDATE games SET blackUsername=? WHERE gameID=?")) {
+                    preparedStatement.setString(1, null);
+                    preparedStatement.setInt(2, gameID);
+                    preparedStatement.executeUpdate();
+                }
+            }
         }
         catch (Exception e){
             throw new DataAccessException("Error: bad request");
