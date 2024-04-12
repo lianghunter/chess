@@ -153,7 +153,28 @@ public class SQLGameDAO implements GameDAO{
         }
     }
 
-
+    @Override
+    public void updateUser(String username, int gameID, boolean isWhite) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()){
+            if(isWhite){
+                try (var preparedStatement = conn.prepareStatement("UPDATE games SET whiteUsername=? WHERE gameID=?")) {
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setInt(2, gameID);
+                    preparedStatement.executeUpdate();
+                }
+            }
+            else{
+                try (var preparedStatement = conn.prepareStatement("UPDATE games SET blackUsername=? WHERE gameID=?")) {
+                    preparedStatement.setString(1, username);
+                    preparedStatement.setInt(2, gameID);
+                    preparedStatement.executeUpdate();
+                }
+            }
+        }
+        catch (Exception e){
+            throw new DataAccessException("Error: bad request");
+        }
+    }
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {

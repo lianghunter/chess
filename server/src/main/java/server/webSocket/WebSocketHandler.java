@@ -4,6 +4,7 @@ package server.webSocket;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
+import client.ClientMain;
 import dataAccess.DataAccessException;
 import dataAccess.SQLAuthDAO;
 import dataAccess.SQLGameDAO;
@@ -27,7 +28,7 @@ public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException, IllegalAccessException {
+    public void onMessage(Session session, String message) throws Exception {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch(userGameCommand.getCommandType())
         {
@@ -39,36 +40,37 @@ public class WebSocketHandler {
         }
     }
 
-    private void joinPlayer(PlayerJoin playerJoin, Session session) throws IOException, DataAccessException, IllegalAccessException {
+    private void joinPlayer(PlayerJoin playerJoin, Session session) throws Exception {
         validateGameAndAuth(playerJoin, session);
-        ChessGame.TeamColor teamColor = playerJoin.getPlayerColor();
+        ChessGame.TeamColor desiredColor = playerJoin.getPlayerColor();
         SQLGameDAO gameDAO = new SQLGameDAO();
         SQLAuthDAO authDAO = new SQLAuthDAO();
         GameData game = gameDAO.getGame(playerJoin.getGameID());
         ChessGame chessgame = game.game();
         String username = authDAO.getUserFromAuth(playerJoin.getAuthString());
-
-        if (teamColor == ChessGame.TeamColor.BLACK)
+        boolean isWhite = false;
+        if (desiredColor == ChessGame.TeamColor.BLACK)
         {
-            if (!username.equals(game.blackUsername()))
+            isWhite = false;
+            if (!username.equals(game.blackUsername()) && game.blackUsername() != null)
             {
                 connectionManager.sendError(playerJoin.getAuthString(),
                         new SocketError("User already exists in game.") );
                 return;
             }
         }
-
-        if (teamColor == ChessGame.TeamColor.WHITE)
+        if (desiredColor == ChessGame.TeamColor.WHITE)
         {
-            if(!username.equals(game.whiteUsername()))
+            isWhite = true;
+            if(!username.equals(game.whiteUsername()) && game.whiteUsername() != null)
             {
                 connectionManager.sendError(playerJoin.getAuthString(), new SocketError("User already exists in game."));
                 return;
             }
         }
-
-        Notification notif = new Notification("Player: " + username + " joined " + teamColor);
-        var loadGame = new LoadGame(chessgame);
+        Notification notif = new Notification("Player: " + username + " joined " + desiredColor);
+        var loadGame = new LoadGame(chessgame, desiredColor);
+        gameDAO.updateUser(username, game.gameID(), isWhite);
         connectionManager.broadcast(playerJoin.getAuthString(), notif, playerJoin.getGameID(), false);
         connectionManager.sendMessage(playerJoin.getGameID(), playerJoin.getAuthString(), loadGame);
     }
@@ -85,7 +87,7 @@ public class WebSocketHandler {
         String username = mysqlAuth.getUserFromAuth(auth); // 得到username
 
         Notification notification = new Notification("A player called " + username + " is observing the game.");
-        var loadGame = new LoadGame(chessGame);
+        var loadGame = new LoadGame(chessGame, null);
         connectionManager.broadcast(auth, notification, gameID, false);
         connectionManager.sendMessage(gameID, auth, loadGame);
     }
@@ -137,7 +139,7 @@ public class WebSocketHandler {
         }
 
         theSqlGame.updateGame(realGame, gameID);
-        var loadGameMessage = new LoadGame(realGame);
+        var loadGameMessage = new LoadGame(realGame, selfColor);
         Notification notification = new Notification(username + " moved " + startPiece.getPieceType().toString() + " from " +
                 theMove.getStartPosition().toString() + " to " + theMove.getEndPosition().toString() + ".");
         connectionManager.broadcast(auth, notification, gameID, false);

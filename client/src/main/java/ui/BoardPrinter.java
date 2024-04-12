@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 
 import static ui.EscapeSequences.*;
 
-public class Board {
+public class BoardPrinter {
     public static ChessBoard board = new ChessBoard();
     static {
         board.resetBoard();
@@ -26,10 +26,12 @@ public class Board {
         printBlankFullRow(System.out, RESET_BG_COLOR);
         printBoard(board, ChessGame.TeamColor.BLACK);
         PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-        out.print("\u001B[49m");
-        out.print(SET_TEXT_COLOR_BLACK);
     }
     public static void printBoard(ChessBoard board, ChessGame.TeamColor teamColor) {
+        if(teamColor == null){
+            printAll(board);
+            return;
+        }
         PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         int spaceCol;
@@ -75,6 +77,8 @@ public class Board {
         printBlankFullRow(out, border);
         out.print(textColor);
         out.print(orgBackgroundColor);
+        out.print("\u001B[49m");
+        out.print(SET_TEXT_COLOR_BLACK);
     }
     private static void printHeader(PrintStream out, ChessGame.TeamColor callerColor) {
         String [] headerOrder;

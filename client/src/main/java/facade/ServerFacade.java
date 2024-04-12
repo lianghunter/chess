@@ -18,6 +18,7 @@ import java.net.*;
 public class ServerFacade {
     private final int port;
     private final String url;
+    public String authToken;
 
     public ServerFacade(int port) {
         this.port = port;

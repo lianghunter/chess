@@ -101,6 +101,5 @@ public class ChessBoard {
         for(int i = 0; i <= 7; i++){
             this.squares[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
         }
-
     }
 }

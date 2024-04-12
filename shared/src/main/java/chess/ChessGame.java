@@ -240,4 +240,12 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return this.board;
     }
+
+    public void updateBoard(ChessBoard board){
+        this.board = board;
+    }
+
+    public void drawBoard(boolean isWhite){
+
+    }
 }

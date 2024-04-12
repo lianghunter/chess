@@ -18,5 +18,6 @@
     <orderEntry type="library" name="mysql.connector.java" level="project" />
     <orderEntry type="library" name="springframework.security.spring.core" level="project" />
     <orderEntry type="library" name="glassfish.tyrus.bundles.standalone.client" level="project" />
+    <orderEntry type="module" module-name="client" />
   </component>
 </module>
